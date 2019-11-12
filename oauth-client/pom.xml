@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>spring-oauth-demo</artifactId>
+        <groupId>cn.pri.smilly</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>cn.pri.smilly</groupId>
+    <artifactId>oauth-client</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>${project.artifactId}</name>
+    <description>Demo project for Spring Boot</description>
+    <packaging>jar</packaging>
+
+    <profiles>
+        <profile>
+            <id>web</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <profile.active>web</profile.active>
+                <application.port>8086</application.port>
+                <context.path>/web</context.path>
+                <application.name>web-client</application.name>
+                <client.id>web</client.id>
+                <client.secret>123456</client.secret>
+                <client.grant.type>authorization_code</client.grant.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>app</id>
+            <properties>
+                <profile.active>app</profile.active>
+                <application.port>8096</application.port>
+                <context.path>/app</context.path>
+                <application.name>app-client</application.name>
+                <client.id>app</client.id>
+                <client.secret>123456</client.secret>
+                <client.grant.type>password</client.grant.type>
+            </properties>
+        </profile>
+    </profiles>
+
+</project>

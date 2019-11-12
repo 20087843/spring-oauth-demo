@@ -1,0 +1,26 @@
+server:
+  port: @application.port@
+  servlet:
+    context-path: ${context.path}
+
+spring:
+  application:
+    name: ${application.name}
+    version: ${project.version}
+  profiles:
+    active: ${profile.active}
+
+security:
+  oauth2:
+    client:
+      client-id: ${client.id}
+      client-secret: ${client.secret}
+      user-authorization-uri: http://localhost:9024/uaa/oauth/authorize
+      access-token-uri: http://localhost:9024/uaa/oauth/token
+      grant-type: ${client.grant.type}
+    resource:
+      jwt:
+        key-uri: http://localhost:9024/uaa/oauth/token_key
+      user-info-uri: http://localhost:9024/uaa/user
+    sso:
+      login-path: http://localhost:9024/uaa/login
