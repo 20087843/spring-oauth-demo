@@ -8,8 +8,12 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
-@Configuration
-@EnableResourceServer
+/**
+ * 资源服务器会优先于security主过滤器拦截访问的URL，
+ * 需要注意是不要让你的资源服务器把security主过滤器放行的资源给拦截了就行
+ */
+//@Configuration
+//@EnableResourceServer
 public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
     @Autowired
     private TokenStore tokenStore;
@@ -18,11 +22,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/user/web").access("#oauth2.hasScope('web')")
-                .antMatchers("/user/app").access("#oauth2.hasScope('app')")
-                .anyRequest().authenticated()
-                .and().formLogin().permitAll()
-                .and().httpBasic();
+                .antMatchers("/web").access("#oauth2.hasScope('browser')")
+                .antMatchers("/app").access("#oauth2.hasScope('mobile')");
     }
 
     @Override

@@ -1,11 +1,12 @@
 package cn.pri.smilly.oauthserver.config;
 
+import cn.pri.smilly.oauthserver.service.MemoryClientDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -22,12 +23,15 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
-    private String redirectUrl = "https://www.baidu.com";
+    @Value("${jwt.signing.key}")
+    private String jwtSigningKey;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private MemoryClientDetailsService clientDetailsService;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Bean
     public TokenStore tokenStore() {
@@ -37,7 +41,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey("testKey");
+        converter.setSigningKey(jwtSigningKey);
         return converter;
     }
 
@@ -46,11 +50,11 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         endpoints.authenticationManager(authenticationManager)
                 .tokenStore(tokenStore())
                 .tokenEnhancer(jwtAccessTokenConverter())
-                .tokenServices(createTokenServices(endpoints))
+                .tokenServices(tokenServices(endpoints))
                 .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST);
     }
 
-    private DefaultTokenServices createTokenServices(AuthorizationServerEndpointsConfigurer endpoints) {
+    private DefaultTokenServices tokenServices(AuthorizationServerEndpointsConfigurer endpoints) {
         DefaultTokenServices tokenServices = (DefaultTokenServices) endpoints.getDefaultAuthorizationServerTokenServices();
         tokenServices.setTokenStore(endpoints.getTokenStore());
         tokenServices.setSupportRefreshToken(true);
@@ -63,29 +67,15 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         security.tokenKeyAccess("permitAll()")
-                .checkTokenAccess("permitAll()")
+                .checkTokenAccess("isAuthenticated()")
                 .allowFormAuthenticationForClients();
     }
 
-    // 设置客户端信息
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.inMemory()
-                .withClient("web")
-                .resourceIds("web")
-                .scopes("web")
-                .secret(passwordEncoder.encode("123456"))
-                .authorizedGrantTypes("authorization_code", "refresh_token")
-                .authorities("oauth2")
-                .autoApprove(false)
-                .and()
-                .withClient("app")
-                .resourceIds("app")
-                .scopes("app")
-                .secret(passwordEncoder.encode("123456"))
-                .authorizedGrantTypes("password", "client_credentials", "refresh_token")
-                .authorities("oauth2")
-                .redirectUris(redirectUrl)
-                .autoApprove(false);
+        clientDetailsService
+                .withClient("app").secret(passwordEncoder.encode("app123")).scopes("mobile").authorizedGrantTypes("password", "refresh_token").build()
+                .withClient("web").secret(passwordEncoder.encode("web123")).scopes("browser").authorizedGrantTypes("authorization_code", "refresh_token").redirectUris("https://www.baidu.com").build();
+        clients.withClientDetails(clientDetailsService);
     }
 }

@@ -2,3 +2,7 @@ server:
   port: 9024
   servlet:
     context-path: /uaa
+
+jwt:
+  signing:
+    key: smilly
