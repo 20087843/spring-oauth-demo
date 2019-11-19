@@ -1,9 +1,9 @@
 server:
-  port: 8080
+  port: 8085
 
 spring:
   application:
-    name: oauth-client
+    name: oauth-client-sso
     version: ${project.version}
   profiles:
     active: ${profile.active}
@@ -11,9 +11,10 @@ spring:
 security:
   oauth2:
     client:
-      client-id: client_normal
+      client-id: client_sso
       client-secret: client
-      grant-type: client_credentials
       user-authorization-uri: http://localhost:9024/uaa/oauth/authorize
       access-token-uri: http://localhost:9024/uaa/oauth/token
+    sso:
+      login-path: http://localhost:9024/uaa/login
 

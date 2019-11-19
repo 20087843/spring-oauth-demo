@@ -9,10 +9,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
     @Autowired
@@ -39,8 +40,8 @@ public class UserController {
     }
 
     @GetMapping("/current")
-    public Object currentUser() {
-        return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public Object currentUser(Principal principal) {
+        return principal;
     }
 
 }

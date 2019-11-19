@@ -9,21 +9,25 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Res
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 /**
- * 资源服务器会优先于security主过滤器拦截访问的URL，
- * 需要注意是不要让你的资源服务器把security主过滤器放行的资源给拦截了就行
+ * ResourceServerConfigurerAdapter 的优先级为3, 比 WebSecurityConfigurerAdapter 100 要高,
+ * ResourceServerConfigurerAdapter 中的拦截配置规则先起作用, 因此配置
+ * ResourceServerConfigurerAdapter 不能将 ResourceServerConfigurerAdapter 中的拦截配置覆盖
+ * 本项目中，, ResourceServer 只拦截以 /api 开头的路径, 即项目资源路径
+ * http.antMather("/api/**") 即定义 httpSecurityConfig 拦截根目录
  */
-//@Configuration
-//@EnableResourceServer
+@Configuration
+@EnableResourceServer
 public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
     @Autowired
     private TokenStore tokenStore;
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.antMatcher("/api/**") // 只拦截以 /api 开头的路径
                 .authorizeRequests()
-                .antMatchers("/web").access("#oauth2.hasScope('browser')")
-                .antMatchers("/app").access("#oauth2.hasScope('mobile')");
+                .antMatchers("/client").hasRole("USER")
+                .antMatchers("/user").hasRole("ADMIN")
+                .anyRequest().authenticated();
     }
 
     @Override

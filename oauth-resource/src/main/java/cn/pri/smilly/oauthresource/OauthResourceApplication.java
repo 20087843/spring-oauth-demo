@@ -1,13 +1,13 @@
-package cn.pri.smilly.oauthclient;
+package cn.pri.smilly.oauthresource;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AppClientApplication {
+public class OauthResourceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AppClientApplication.class, args);
+        SpringApplication.run(OauthResourceApplication.class, args);
     }
 
 }

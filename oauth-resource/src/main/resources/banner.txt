@@ -1,0 +1,16 @@
+=========================================   ${AnsiColor.YELLOW}${AnsiStyle.BOLD}
+        ${spring.application.name} : ${AnsiColor.MAGENTA}${spring.application.version}
+                                            ${AnsiStyle.NORMAL}${AnsiColor.RED}
+  _____             _  _  _                 ${AnsiColor.YELLOW}
+ / ____|           (_)| || |                ${AnsiColor.YELLOW}
+| (___   _ __ ___   _ | || | _   _          ${AnsiColor.BRIGHT_GREEN}
+ \___ \ | '_ ` _ \ | || || || | | |         ${AnsiColor.BRIGHT_GREEN}
+ ____) || | | | | || || || || |_| |         ${AnsiColor.BRIGHT_CYAN}
+|_____/ |_| |_| |_||_||_||_| \__, |         ${AnsiColor.BRIGHT_CYAN}
+                              __/ |         ${AnsiColor.BLUE}
+                             |___/          ${AnsiColor.BLUE}
+                                            ${AnsiColor.RED}
+                  A smile every day
+                                            ${AnsiColor.BLACK}
+SpringBoot : ${AnsiColor.MAGENTA} ${spring-boot.version} ${AnsiColor.BLACK}
+=========================================

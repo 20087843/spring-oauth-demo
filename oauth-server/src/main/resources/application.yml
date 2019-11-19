@@ -3,6 +3,13 @@ server:
   servlet:
     context-path: /uaa
 
+spring:
+  application:
+    name: ${project.name}
+    version: ${project.version}
+  profiles:
+    active: ${profile.active}
+
 jwt:
   signing:
     key: smilly

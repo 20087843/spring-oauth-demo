@@ -1,6 +1,7 @@
 package cn.pri.smilly.oauthserver.config;
 
 import cn.pri.smilly.oauthserver.service.MemoryClientDetailsService;
+import cn.pri.smilly.oauthserver.service.MemoryUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +30,8 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Autowired
     private MemoryClientDetailsService clientDetailsService;
     @Autowired
+    private MemoryUserDetailsService userDetailsService;
+    @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -51,6 +54,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
                 .tokenStore(tokenStore())
                 .tokenEnhancer(jwtAccessTokenConverter())
                 .tokenServices(tokenServices(endpoints))
+                .userDetailsService(userDetailsService)
                 .allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST);
     }
 
@@ -66,16 +70,17 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-        security.tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()")
+        security.tokenKeyAccess("isAuthenticated()") //开启 /oauth/token_key验证端口无权限访问
+                .checkTokenAccess("hasAuthority('RESOURCE')") // 开启 /oauth/check_token 授权访问
                 .allowFormAuthenticationForClients();
     }
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clientDetailsService
-                .withClient("app").secret(passwordEncoder.encode("app123")).scopes("mobile").authorizedGrantTypes("password", "refresh_token").build()
-                .withClient("web").secret(passwordEncoder.encode("web123")).scopes("browser").authorizedGrantTypes("authorization_code", "refresh_token").redirectUris("https://www.baidu.com").build();
+                .withClient("client_normal").secret(passwordEncoder.encode("client")).scopes("client").authorizedGrantTypes("password", "client_credentials", "refresh_token").build()
+                .withClient("client_sso").secret(passwordEncoder.encode("client")).scopes("client").authorizedGrantTypes("authorization_code", "implicit", "refresh_token").redirectUris("https://www.baidu.com", "").build()
+                .withClient("resource_server").secret(passwordEncoder.encode("resource")).authorizedGrantTypes("password", "refresh_token").authorities("RESOURCE").build();
         clients.withClientDetails(clientDetailsService);
     }
 }
